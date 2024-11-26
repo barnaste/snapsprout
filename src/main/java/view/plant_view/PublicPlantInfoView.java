@@ -12,7 +12,11 @@ import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class PublicPlantInfoView extends PlantView implements PropertyChangeListener {
+/**
+ * The View for the display of publicly visible plants use case.
+ */
+public class PublicPlantInfoView extends PlantView {
+
     private PublicPlantInfoController controller;
 
     public PublicPlantInfoView(Plant plant, BufferedImage image) {
@@ -29,6 +33,7 @@ public class PublicPlantInfoView extends PlantView implements PropertyChangeList
         this.getLikesLabel().setText("\uD83D\uDC4D " + plant.getNumOfLikes());
     }
 
+    @Override
     protected JPanel createTopPanel() {
         JPanel topPanel = super.createTopPanel();
         JButton returnBtn = ViewComponentFactory.buildButton(PublicPlantInfoViewModel.RETURN_BUTTON_LABEL);
@@ -39,6 +44,7 @@ public class PublicPlantInfoView extends PlantView implements PropertyChangeList
         return topPanel;
     }
 
+    @Override
     protected JPanel createContentPanel() {
         JPanel contentPanel = super.createContentPanel();
         contentPanel.remove(this.getTogglePublic());
@@ -48,13 +54,4 @@ public class PublicPlantInfoView extends PlantView implements PropertyChangeList
     public void setController(PublicPlantInfoController controller) {
         this.controller = controller;
     }
-
-    /**
-     * @param evt A PropertyChangeEvent object describing the event source
-     *            and the property that has changed.
-     */
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-    }
-
 }

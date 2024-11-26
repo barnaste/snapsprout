@@ -13,6 +13,10 @@ import use_case.upload.UploadConfirmOutputData;
 import use_case.upload.UploadResultOutputData;
 import use_case.upload.UploadSelectOutputData;
 
+/**
+ * The presenter for the Upload use case. This class unpacks interactor information
+ * and sends change details to the view.
+ */
 public class UploadPresenter implements UploadOutputBoundary {
 
     private final UploadSelectViewModel selectViewModel;
@@ -45,6 +49,17 @@ public class UploadPresenter implements UploadOutputBoundary {
     }
 
     @Override
+    public void switchToSelectView(UploadSelectOutputData outputData) {
+        final UploadSelectState state = selectViewModel.getState();
+        state.setError(outputData.getError());
+        selectViewModel.setState(state);
+        selectViewModel.firePropertyChanged();
+
+        viewManagerModel.setState(selectViewModel.getViewName());
+        viewManagerModel.firePropertyChanged();
+    }
+
+    @Override
     public void switchToResultView(UploadResultOutputData outputData) {
         final UploadResultState state = resultViewModel.getState();
         state.setImagePath(outputData.getImage());
@@ -60,18 +75,7 @@ public class UploadPresenter implements UploadOutputBoundary {
     }
 
     @Override
-    public void prepareSuccessView() {
+    public void notifyUploadComplete() {
         mainViewModel.firePropertyChanged("refresh");
-    }
-
-    @Override
-    public void switchToSelectView(UploadSelectOutputData outputData) {
-        final UploadSelectState state = selectViewModel.getState();
-        state.setError(outputData.getError());
-        selectViewModel.setState(state);
-        selectViewModel.firePropertyChanged();
-
-        viewManagerModel.setState(selectViewModel.getViewName());
-        viewManagerModel.firePropertyChanged();
     }
 }

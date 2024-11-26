@@ -1,6 +1,11 @@
 package use_case.upload;
 
+/**
+ * Output Data for the Upload use case when transitioning to the results stage.
+ * Contains details about the plant within the image uploaded, as well as the image itself.
+ */
 public class UploadResultOutputData {
+
     private final String imagePath;
     private final String name;
     private final String scientificName;
@@ -16,7 +21,7 @@ public class UploadResultOutputData {
         this.certainty = certainty;
     }
 
-        public String getImage() {
+    public String getImage() {
         return imagePath;
     }
 

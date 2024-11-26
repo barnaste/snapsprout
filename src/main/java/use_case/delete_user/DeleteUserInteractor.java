@@ -1,8 +1,5 @@
 package use_case.delete_user;
 
-import data_access.MongoImageDataAccessObject;
-import data_access.MongoPlantDataAccessObject;
-import data_access.MongoUserDataAccessObject;
 import entity.Plant;
 import use_case.ImageDataAccessInterface;
 import use_case.PlantDataAccessInterface;
@@ -14,16 +11,21 @@ import java.util.List;
 /**
  * The Delete User Interactor.
  */
-public class DeleteUserInteractor implements DeleteUserInputBoundry {
+public class DeleteUserInteractor implements DeleteUserInputBoundary {
     private final PlantDataAccessInterface plantDataAccessObject;
     private final ImageDataAccessInterface imageDataAccessObject;
     private final UserDataAccessInterface userDataAccessObject;
     private final DeleteUserOutputBoundary deleteUserPresenter;
 
-    public DeleteUserInteractor(DeleteUserOutputBoundary deleteUserOutputBoundary) {
-        this.plantDataAccessObject = MongoPlantDataAccessObject.getInstance();
-        this.imageDataAccessObject = MongoImageDataAccessObject.getInstance();
-        this.userDataAccessObject = MongoUserDataAccessObject.getInstance();
+    private Runnable escapeMap;
+
+    public DeleteUserInteractor(PlantDataAccessInterface plantDataAccessObject,
+                                ImageDataAccessInterface imageDataAccessObject,
+                                UserDataAccessInterface userDataAccessObject,
+                                DeleteUserOutputBoundary deleteUserOutputBoundary) {
+        this.plantDataAccessObject = plantDataAccessObject;
+        this.imageDataAccessObject = imageDataAccessObject;
+        this.userDataAccessObject = userDataAccessObject;
         this.deleteUserPresenter = deleteUserOutputBoundary;
     }
 
@@ -34,10 +36,9 @@ public class DeleteUserInteractor implements DeleteUserInputBoundry {
         String username = userDataAccessObject.getCurrentUsername();
         String password = userDataAccessObject.getUser(username).getPassword();
 
-            // Validate the input (you can add your logic here)
+        // Validate the input
         if (username.equals(tempusername) && password.equals(temppassword)) {
-                // Proceed with deletion or other logic
-
+            // Proceed with deletion
             //GRAB THE PLANTS
             List<Plant> plants = plantDataAccessObject.getUserPlants(username);
             for (Plant plant : plants) {
@@ -50,16 +51,21 @@ public class DeleteUserInteractor implements DeleteUserInputBoundry {
             userDataAccessObject.deleteUser(username);
             //LOGOUT
             userDataAccessObject.setCurrentUsername(null);
-            final DeleteUserOutputData deleteUserOutputData = new DeleteUserOutputData(username, false);
+            //final DeleteUserOutputData deleteUserOutputData = new DeleteUserOutputData(username);
             //GO TO WELCOME VIEW
-            deleteUserPresenter.prepareSuccessView(deleteUserOutputData);
-
+            deleteUserPresenter.prepareSuccessView();
+            escape();
         } else {
-                // Show an error message if validation fails
-                //call prepare failview
-                deleteUserPresenter.prepareFailView("Invalid credentials. Try again.");
+            // Show an error message if validation fails
+            deleteUserPresenter.prepareFailView("Invalid credentials. Try again.");
         }
+    }
 
+    public void setEscapeMap(Runnable escapeMap) {
+        this.escapeMap = escapeMap;
+    }
 
+    public void escape() {
+        this.escapeMap.run();
     }
 }

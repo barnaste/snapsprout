@@ -1,13 +1,12 @@
-package use_case;
+package use_case.like_plant;
+
 import data_access.InMemoryPlantDataAccessObject;
 import entity.Plant;
 import org.bson.types.ObjectId;
 import org.junit.Test;
+import use_case.PlantDataAccessInterface;
+
 import static org.junit.Assert.*;
-import use_case.like_plant.LikePlantInputBoundary;
-import use_case.like_plant.LikePlantInputData;
-import use_case.like_plant.LikePlantInteractor;
-import use_case.like_plant.LikePlantOutputBoundary;
 
 
 public class LikePlantInteractorTest {

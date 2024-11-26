@@ -56,26 +56,20 @@ public class UserGalleryInteractor implements UserGalleryInputBoundary {
         currentPage = page;
         int skip = page * IMAGES_PER_PAGE;  // Calculate the offset based on the page
 
-        try {
-            // Retrieve the correct slice of Plant objects from database
-            List<Plant> plants = plantDataAccessObject.getUserPlants(userDataAccessObject.getCurrentUsername(), skip, IMAGES_PER_PAGE);
+        // Retrieve the correct slice of Plant objects from database
+        List<Plant> plants = plantDataAccessObject.getUserPlants(userDataAccessObject.getCurrentUsername(), skip, IMAGES_PER_PAGE);
 
-            // Get images from Plant objects
-            List<BufferedImage> images = new ArrayList<>();
-            List<ObjectId> ids = new ArrayList<>();
-            for (Plant plant : plants) {
-                images.add(imageDataAccessObject.getImageFromID(plant.getImageID()));
-                ids.add(plant.getFileID());
-            }
-
-            // Prepare output data and send to presenter
-            int totalPages = getNumberOfUserPlants();
-            UserGalleryOutputData outputData = new UserGalleryOutputData(images, ids, currentPage, totalPages);
-            galleryPresenter.prepareSuccessView(outputData);
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("issue here");
+        // Get images from Plant objects
+        List<BufferedImage> images = new ArrayList<>();
+        List<ObjectId> ids = new ArrayList<>();
+        for (Plant plant : plants) {
+            images.add(imageDataAccessObject.getImageFromID(plant.getImageID()));
+            ids.add(plant.getFileID());
         }
+
+        // Prepare output data and send to presenter
+        int totalPages = getNumberOfUserPlants();
+        UserGalleryOutputData outputData = new UserGalleryOutputData(images, ids, currentPage, totalPages);
+        galleryPresenter.prepareSuccessView(outputData);
     }
 }

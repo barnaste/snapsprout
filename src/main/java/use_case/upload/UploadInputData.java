@@ -1,7 +1,7 @@
 package use_case.upload;
 
 /**
- * The Input Data for the Upload use case.
+ * The Input Data for the Upload use case. Contains information about the image to upload.
  */
 public class UploadInputData {
 

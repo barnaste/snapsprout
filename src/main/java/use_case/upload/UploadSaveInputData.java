@@ -3,7 +3,8 @@ package use_case.upload;
 import java.awt.image.BufferedImage;
 
 /**
- * The Input Data for the Upload use case.
+ * The Input Data for the Upload use case, when saving details about a plant
+ * found within the uploaded image to storage.
  */
 public class UploadSaveInputData {
 

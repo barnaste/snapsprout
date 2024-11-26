@@ -8,9 +8,8 @@ import use_case.login.LoginOutputData;
 public interface DeleteUserOutputBoundary {
     /**
      * Prepares the success view for the Delete User Use Case.
-     * @param outputData the output data
      */
-    void prepareSuccessView(DeleteUserOutputData outputData);
+    void prepareSuccessView();
 
     /**
      * Prepares the failure view for the Delete User Use Case.

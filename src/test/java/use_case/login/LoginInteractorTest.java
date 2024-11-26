@@ -1,12 +1,13 @@
-package use_case;
+package use_case.login;
 import data_access.InMemoryUserDataAccessObject;
 import entity.User;
 import org.junit.Test;
-import use_case.login.*;
+import use_case.UserDataAccessInterface;
 
 import static org.junit.Assert.*;
 
 public class LoginInteractorTest {
+
     @Test
     public void successTest() {
         // create user and save to DAO
@@ -23,6 +24,11 @@ public class LoginInteractorTest {
             public void prepareSuccessView(LoginOutputData user) {
                 // the current user should be "arz"
                 assertEquals("arz", user.getUsername());
+            }
+
+            @Override
+            public void prepareFailView() {
+                fail("Use case failure is unexpected.");
             }
 
             @Override

@@ -5,6 +5,10 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.image.BufferedImage;
 
+/**
+ * A base design for views that display Plant objects. This design contains four sections:
+ * the top options bar, the image panel, the plant details panel, and the user action panel.
+ */
 public class PlantView extends JPanel {
     private final JLabel nameLabel = new JLabel();
     private final JLabel scientificNameLabel = new JLabel();
@@ -55,6 +59,10 @@ public class PlantView extends JPanel {
         this.add(createActionPanel(), constraints);
     }
 
+    /**
+     * Create the panel seen at the top of the view, containing the return button.
+     * @return a reference to the created panel
+     */
     protected JPanel createTopPanel() {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
@@ -67,6 +75,12 @@ public class PlantView extends JPanel {
         return topPanel;
     }
 
+    /**
+     * Create the panel within which information about the plant is displayed, containing details
+     * such as the plant name and family, as well as user-modifiable fields such as the privacy
+     * toggle and a text area for user notes.
+     * @return a reference to the created panel
+     */
     protected JPanel createContentPanel() {
         JPanel contentPanel = new JPanel();
         SpringLayout layout = new SpringLayout();
@@ -148,6 +162,10 @@ public class PlantView extends JPanel {
         return contentPanel;
     }
 
+    /**
+     * Create the image panel, in charge of displaying the plant image.
+     * @return a reference to the created panel
+     */
     private JPanel createImagePanel() {
         JPanel imagePanel = new JPanel() {
             @Override
@@ -169,6 +187,11 @@ public class PlantView extends JPanel {
         return imagePanel;
     }
 
+    /**
+     * Create the panel within which user action buttons are displayed. The available actions
+     * depend on the child class for implementation.
+     * @return a reference to the created panel
+     */
     protected JPanel createActionPanel() {
         JPanel actionPanel = new JPanel();
         actionPanel.setLayout(new GridBagLayout());

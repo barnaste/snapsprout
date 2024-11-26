@@ -7,12 +7,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -32,7 +27,6 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
     private final JLabel usernameErrorField = new JLabel();
 
     private final JPasswordField passwordInputField = new JPasswordField(15);
-    private final JLabel passwordErrorField = new JLabel();
 
     private final JButton logIn;
     private final JButton cancel;
@@ -43,7 +37,7 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         this.loginViewModel = loginViewModel;
         this.loginViewModel.addPropertyChangeListener(this);
 
-        final JLabel title = new JLabel("Login Screen");
+        final JLabel title = new JLabel("Please enter your username and password:");
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         final LabelTextPanel usernameInfo = new LabelTextPanel(
@@ -65,10 +59,14 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
                                 currentState.getPassword()
                         );
                     }
+                    clearFields();
                 }
         );
 
-        cancel.addActionListener(this);
+        cancel.addActionListener(evt -> {
+            loginController.switchToStartView();
+            clearFields();
+        });
 
         usernameInputField.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -137,14 +135,14 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        final LoginState state = (LoginState) evt.getNewValue();
-        setFields(state);
-        usernameErrorField.setText(state.getLoginError());
+        if (evt.getPropertyName().equals("error")) {
+            JOptionPane.showMessageDialog(this, LoginViewModel.LOGIN_ERROR_MESSAGE);
+        }
     }
 
-    private void setFields(LoginState state) {
-        usernameInputField.setText(state.getUsername());
-        passwordInputField.setText(state.getPassword());
+    private void clearFields() {
+        usernameInputField.setText("");
+        passwordInputField.setText("");
     }
 
 

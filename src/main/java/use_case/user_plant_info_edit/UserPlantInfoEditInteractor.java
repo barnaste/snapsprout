@@ -5,7 +5,11 @@ import use_case.ImageDataAccessInterface;
 import use_case.PlantDataAccessInterface;
 import entity.Plant;
 
+/**
+ * The Plant Edit Interactor.
+ */
 public class UserPlantInfoEditInteractor implements UserPlantInfoEditInputBoundary {
+
     private final PlantDataAccessInterface plantDatabase;
     private final ImageDataAccessInterface imageDatabase;
     private final UserPlantInfoEditPresenter presenter;
@@ -17,10 +21,6 @@ public class UserPlantInfoEditInteractor implements UserPlantInfoEditInputBounda
         this.plantDatabase = plantDatabase;
         this.imageDatabase = imageDatabase;
         this.presenter = presenter;
-    }
-
-    public void setPlant(Plant currentPlant) {
-        this.currentPlant = currentPlant;
     }
 
     @Override
@@ -52,5 +52,9 @@ public class UserPlantInfoEditInteractor implements UserPlantInfoEditInputBounda
     @Override
     public void escape() {
         this.escapeMap.run();
+    }
+
+    public void setPlant(Plant currentPlant) {
+        this.currentPlant = currentPlant;
     }
 }

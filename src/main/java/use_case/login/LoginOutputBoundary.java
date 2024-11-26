@@ -11,10 +11,9 @@ public interface LoginOutputBoundary {
     void prepareSuccessView(LoginOutputData outputData);
 
     /**
-     * Prepares the failure view for the Login Use Case.
-     * @param errorMessage the explanation of the failure
+     * Prepares the failure view for the Login Use Case in case the username and password do not match.
      */
-    void prepareFailView(String errorMessage);
+    void prepareFailView();
 
     /**
      * Switches to the Start View.

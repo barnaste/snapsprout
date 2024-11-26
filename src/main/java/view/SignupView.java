@@ -18,8 +18,8 @@ import interface_adapter.signup.SignupViewModel;
 /**
  * The View for when the user attempts to sign up.
  */
-public class SignupView extends JPanel implements ActionListener, PropertyChangeListener {
-    // set username passoword + confirm and send to database
+public class SignupView extends JPanel implements PropertyChangeListener {
+    // set username password + confirm and send to database
     private final String viewName = "sign up";
 
     private final SignupViewModel signupViewModel;
@@ -54,30 +54,29 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
 
         signUp.addActionListener(
                 // This creates an anonymous subclass of ActionListener and instantiates it.
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        if (evt.getSource().equals(signUp)) {
-                            final SignupState currentState = signupViewModel.getState();
+                evt -> {
+                    if (evt.getSource().equals(signUp)) {
+                        final SignupState currentState = signupViewModel.getState();
 
-                            signupController.execute(
-                                    currentState.getUsername(),
-                                    currentState.getPassword(),
-                                    currentState.getRepeatPassword()
-                            );
-                        }
+                        signupController.execute(
+                                currentState.getUsername(),
+                                currentState.getPassword(),
+                                currentState.getRepeatPassword()
+                        );
                     }
+                    clearFields();
                 }
         );
 
-        toLogin.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        signupController.switchToLoginView();
-                    }
-                }
-        );
+        toLogin.addActionListener(evt -> {
+            signupController.switchToLoginView();
+            clearFields();
+        });
 
-        cancel.addActionListener(this);
+        cancel.addActionListener(evt -> {
+            signupController.switchToStartView();
+            clearFields();
+        });
 
         addUsernameListener();
         addPasswordListener();
@@ -114,6 +113,12 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
                 documentListenerHelper();
             }
         });
+    }
+
+    private void clearFields() {
+        usernameInputField.setText("");
+        passwordInputField.setText("");
+        repeatPasswordInputField.setText("");
     }
 
     private void addPasswordListener() {
@@ -166,11 +171,6 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
                 documentListenerHelper();
             }
         });
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent evt) {
-        signupController.switchToStartView();
     }
 
     @Override

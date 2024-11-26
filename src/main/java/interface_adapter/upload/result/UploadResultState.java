@@ -1,6 +1,11 @@
 package interface_adapter.upload.result;
 
+/**
+ * State information for the Upload use case in regard to the results stage.
+ * Contains information about the plant displayed in this stage.
+ */
 public class UploadResultState {
+
     private String imagePath = "";
     private String name = "";
     private String scientificName = "";

@@ -3,9 +3,11 @@ package interface_adapter.upload.select;
 import interface_adapter.ViewModel;
 
 /**
- * The ViewModel for the File Selection component of the Upload View.
+ * The View Model for the selection stage of the Upload use case.
+ * Contains style details for the view in this stage.
  */
 public class UploadSelectViewModel extends ViewModel<UploadSelectState> {
+
     public static final int TRANSPARENT = 0x00000000;
     public static final int TOP_PANEL_COLOR = 0xfff8f5e4;
     public static final int MAIN_PANEL_COLOR = 0xfffffbef;

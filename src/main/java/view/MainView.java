@@ -7,14 +7,24 @@
 
     import javax.swing.*;
 
+    import data_access.MongoUserDataAccessObject;
     import entity.Plant;
+    import interface_adapter.ViewManagerModel;
     import interface_adapter.delete_user.DeleteUserController;
+    import interface_adapter.delete_user.DeleteUserViewModel;
+    import interface_adapter.login.LoginViewModel;
     import interface_adapter.logout.LogoutController;
+    import interface_adapter.logout.LogoutPresenter;
     import interface_adapter.main.MainState;
     import interface_adapter.main.MainViewModel;
     import interface_adapter.mode_switch.ModeSwitchController;
+    import interface_adapter.mode_switch.ModeSwitchPresenter;
     import interface_adapter.mode_switch.ModeSwitchState;
     import interface_adapter.mode_switch.ModeSwitchViewModel;
+    import use_case.logout.LogoutInputBoundary;
+    import use_case.logout.LogoutInteractor;
+    import use_case.logout.LogoutOutputBoundary;
+    import use_case.mode_switch.ModeSwitchInteractor;
     import view.gallery.PublicGalleryView;
     import view.gallery.UserGalleryView;
     import view.panel_factory.*;
@@ -34,7 +44,6 @@
 
         private LogoutController logoutController;
         private ModeSwitchController modeSwitchController;
-        private DeleteUserController deleteUserController;
 
         private String currentUser = "";
         private String currentGalleryMode = "";
@@ -49,9 +58,19 @@
         private final JButton discoverButton;
         private final JButton deleteUserButton;
 
-        public MainView(MainViewModel mainViewModel, ModeSwitchViewModel modeSwitchViewModel) {
+        private final ViewManagerModel viewManagerModel;
+        private final LoginViewModel loginViewModel;
+        private final MainViewModel mainViewModel;
+
+        public MainView(MainViewModel mainViewModel, ViewManagerModel viewManagerModel, LoginViewModel loginViewModel) {
+            this.viewManagerModel = viewManagerModel;
+            this.loginViewModel = loginViewModel;
+            this.mainViewModel = mainViewModel;
+
             mainViewModel.addPropertyChangeListener(this);
-            modeSwitchViewModel.addPropertyChangeListener(this);
+
+            enableModeSwitch();
+            enableLogout();
 
             this.publicGalleryView = PublicGalleryFactory.createPublicGallery(this::overlayPublicPlantView, mainViewModel);
             this.userGalleryView = UserGalleryFactory.createUserGallery(plant -> {
@@ -81,7 +100,7 @@
 
             upload.addActionListener(evt -> overlayUploadView(mainViewModel));
             logOut.addActionListener(e -> logoutController.execute(mainViewModel.getState().getUsername()));
-            deleteUserButton.addActionListener(e -> deleteUserPopup());
+            deleteUserButton.addActionListener(e -> overlayDeleteUserView());
 
             myPlantsButton.addActionListener(e -> modeSwitchController.switchMode());
             myPlantsButton.setEnabled(false);
@@ -160,6 +179,12 @@
             UploadPanelFactory.createUploadPanel(this, overlayPanel, overlay(overlayPanel), mainViewModel);
         }
 
+        public void overlayDeleteUserView() {
+            // create an overlay with the created cardPanel as the popup
+            JPanel overlayPanel = new JPanel();
+            DeleteUserPanelFactory.createDeleteUserPanel(this, overlayPanel, overlay(overlayPanel), viewManagerModel, mainViewModel, loginViewModel);
+        }
+
         /**
          * Create an overlay on the main view that displays the edit plant use case dialog.
          * @param plant the plant object to be displayed in the panel
@@ -220,16 +245,23 @@
             };
         }
 
-        public void setLogoutController(LogoutController logoutController) {
-            this.logoutController = logoutController;
+        private void enableModeSwitch() {
+            ModeSwitchViewModel modeSwitchViewModel = new ModeSwitchViewModel();
+            modeSwitchViewModel.addPropertyChangeListener(this);
+
+            final ModeSwitchPresenter modeSwitchPresenter = new ModeSwitchPresenter(modeSwitchViewModel);
+
+            ModeSwitchInteractor modeSwitchInteractor = new ModeSwitchInteractor(modeSwitchPresenter);
+
+            modeSwitchController = new ModeSwitchController(modeSwitchInteractor);
         }
 
-        public void setModeSwitchController(ModeSwitchController modeSwitchController) {
-            this.modeSwitchController = modeSwitchController;
-        }
+        private void enableLogout() {
+            final LogoutOutputBoundary logoutOutputBoundary = new LogoutPresenter(viewManagerModel, mainViewModel, loginViewModel);
 
-        public void setDeleteUserController(DeleteUserController deleteUserController) {
-            this.deleteUserController = deleteUserController;
+            final LogoutInputBoundary logoutInteractor = new LogoutInteractor(MongoUserDataAccessObject.getInstance(), logoutOutputBoundary);
+
+            logoutController = new LogoutController(logoutInteractor);
         }
 
         public String getViewName() {
@@ -298,40 +330,5 @@
 
             currentGalleryPanel.revalidate();
             currentGalleryPanel.repaint();
-        }
-
-        private void deleteUserPopup() {
-            // Create a panel to hold the input fields
-            JPanel panel = new JPanel();
-            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-            // Create and add labels and text fields for username and password
-            JTextField usernameField = new JTextField(15);
-            JPasswordField passwordField = new JPasswordField(15);
-
-            panel.add(new JLabel("Enter Username:"));
-            panel.add(usernameField);
-            panel.add(Box.createVerticalStrut(10)); // Add space between components
-            panel.add(new JLabel("Enter Password:"));
-            panel.add(passwordField);
-
-            // Show the confirmation dialog
-            int result = JOptionPane.showConfirmDialog(
-                    null,
-                    panel,
-                    "Confirm Deletion",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE
-            );
-
-            // Check the user's choice
-            if (result == JOptionPane.OK_OPTION) {
-                String tempusername = usernameField.getText();
-                String temppassword = new String(passwordField.getPassword());
-                deleteUserController.execute(tempusername,temppassword);
-            }else {
-                //CAN REPLACE THIS
-                System.out.println("Deletion canceled by user.");
-            }
         }
     }

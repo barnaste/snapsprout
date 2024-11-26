@@ -6,7 +6,6 @@ import interface_adapter.login.LoginViewModel;
 import interface_adapter.main.MainState;
 import interface_adapter.main.MainViewModel;
 import use_case.delete_user.DeleteUserOutputBoundary;
-import use_case.delete_user.DeleteUserOutputData;
 
 import javax.swing.*;
 
@@ -28,7 +27,7 @@ public class DeleteUserPresenter implements DeleteUserOutputBoundary {
     }
 
     @Override
-    public void prepareSuccessView(DeleteUserOutputData response) {
+    public void prepareSuccessView() {
         // On success, switch to the start view and logs user out
         // Update the logged in state
         final MainState mainState = mainViewModel.getState();

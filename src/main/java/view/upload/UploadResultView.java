@@ -8,16 +8,16 @@ import view.plant_view.PlantView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+/**
+ * The View for the results stage of the Upload use case.
+ */
 public class UploadResultView extends PlantView implements PropertyChangeListener {
-    private final String viewName = "upload result";
 
     private UploadController controller;
 
@@ -25,6 +25,7 @@ public class UploadResultView extends PlantView implements PropertyChangeListene
         viewModel.addPropertyChangeListener(this);
     }
 
+    @Override
     protected JPanel createTopPanel() {
         JPanel topPanel = super.createTopPanel();
         JButton returnBtn = ViewComponentFactory.buildButton(UploadResultViewModel.RETURN_BUTTON_LABEL);
@@ -35,6 +36,11 @@ public class UploadResultView extends PlantView implements PropertyChangeListene
         return topPanel;
     }
 
+    /**
+     * Create the panel within which user action buttons save and discard are displayed.
+     * @return a reference to the created panel
+     */
+    @Override
     protected JPanel createActionPanel() {
         JPanel actionPanel = super.createActionPanel();
 
@@ -68,14 +74,11 @@ public class UploadResultView extends PlantView implements PropertyChangeListene
         return actionPanel;
     }
 
-    public void setController(UploadController controller) {
-        this.controller = controller;
-    }
-
-    public String getViewName() {
-        return viewName;
-    }
-
+    /**
+     * Set variable fields within this view, such as the plant image and name, based on
+     * the state information given as parameter.
+     * @param state the state the view should represent
+     */
     private void setFields(UploadResultState state) {
         this.setImage(ViewComponentFactory.buildCroppedImage(state.getImagePath()));
         this.getNameLabel().setText(state.getName());
@@ -93,6 +96,18 @@ public class UploadResultView extends PlantView implements PropertyChangeListene
 
         this.revalidate();
         this.repaint();
+    }
+
+    /**
+     * A getter for the view name.
+     * @return the view name to be used by view models
+     */
+    public String getViewName() {
+        return "upload result";
+    }
+
+    public void setController(UploadController controller) {
+        this.controller = controller;
     }
 
     @Override

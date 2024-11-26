@@ -3,12 +3,12 @@ package use_case.upload;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
 import use_case.ImageDataAccessInterface;
 import use_case.PlantDataAccessInterface;
 import entity.Plant;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
@@ -18,7 +18,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import use_case.UserDataAccessInterface;
 
+/**
+ * The Upload Interactor.
+ */
 public class UploadInteractor implements UploadInputBoundary {
+
     private final UploadOutputBoundary presenter;
     private final ImageDataAccessInterface imageDataBase;
     private final PlantDataAccessInterface plantDataBase;
@@ -26,10 +30,10 @@ public class UploadInteractor implements UploadInputBoundary {
 
     private Runnable escapeMap;
 
-    // plantnet-specific information
+    // plantnet-API-specific information
     private static final String PROJECT = "all";
     private static final String API_URL = "https://my-api.plantnet.org/v2/identify/" + PROJECT + "?api-key=";
-    private static final String API_PRIVATE_KEY = "2b1015rSKP2VVP2UzoDaqbYI"; // secret
+    private static final String API_PRIVATE_KEY = "2b1015rSKP2VVP2UzoDaqbYI"; // this is the group key used -- private
 
     public UploadInteractor(UploadOutputBoundary uploadOutputBoundary, ImageDataAccessInterface imageDataBase,
                             PlantDataAccessInterface plantDataBase, UserDataAccessInterface userDataBase) {
@@ -51,20 +55,17 @@ public class UploadInteractor implements UploadInputBoundary {
     }
 
     @Override
-    public void loadImageData(UploadInputData uploadInputData) {
+    public void uploadImageData(UploadInputData uploadInputData) {
         File image = new File(uploadInputData.getImage());
         HttpEntity entity = MultipartEntityBuilder.create()
                 .addPart("images", new FileBody(image)).addTextBody("organs", "auto")
                 .build();
-        // list of probable species
         HttpPost request = new HttpPost(API_URL + API_PRIVATE_KEY);
         request.setEntity(entity);
 
-        HttpClient client = HttpClientBuilder.create().build();
-        HttpResponse httpResponse;
         // fetch plant information from uploaded image using plantnet api
-        try {
-            httpResponse = client.execute(request);
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()){
+            CloseableHttpResponse httpResponse = client.execute(request);
             String jsonString = EntityUtils.toString(httpResponse.getEntity());
 
             JSONObject jsonObject = new JSONObject(jsonString);
@@ -72,7 +73,7 @@ public class UploadInteractor implements UploadInputBoundary {
                 UploadSelectOutputData outputData = new UploadSelectOutputData(jsonObject.getString("message"));
                 this.presenter.switchToSelectView(outputData);
             } else {
-                // find relevant information in jsonObject
+                // find relevant information in the fetched jsonObject
                 String name = jsonObject
                         .getJSONArray("results")
                         .getJSONObject(0)
@@ -102,6 +103,7 @@ public class UploadInteractor implements UploadInputBoundary {
                         family,
                         score
                 );
+
                 this.presenter.switchToResultView(outputData);
             }
         } catch (JSONException | IOException e) {
@@ -124,13 +126,15 @@ public class UploadInteractor implements UploadInputBoundary {
         plantDataBase.addPlant(plant);
 
         this.escapeMap.run();
-        presenter.prepareSuccessView();
+        presenter.notifyUploadComplete();
     }
 
+    @Override
     public void setEscapeMap(Runnable escapeMap) {
         this.escapeMap = escapeMap;
     }
 
+    @Override
     public void escape() {
         this.escapeMap.run();
     }

@@ -12,10 +12,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
- * The View for the File Selection component of the Upload Use Case.
+ * The View for the selection stage of the Upload use case.
  */
 public class UploadSelectView extends JPanel implements PropertyChangeListener {
-    private final String viewName = "upload select";
 
     private UploadController controller;
 
@@ -39,22 +38,10 @@ public class UploadSelectView extends JPanel implements PropertyChangeListener {
         this.add(createMainPanel(), constraints);
     }
 
-    private JPanel createMainPanel() {
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridBagLayout());
-        mainPanel.setBackground(new Color(UploadSelectViewModel.MAIN_PANEL_COLOR, true));
-        mainPanel.setPreferredSize(new Dimension(
-                UploadSelectViewModel.PANEL_WIDTH,
-                UploadSelectViewModel.MAIN_PANEL_HEIGHT
-        ));
-
-        JButton selectFileBtn = ViewComponentFactory.buildButton(UploadSelectViewModel.UPLOAD_BUTTON_LABEL);
-
-        selectFileBtn.addActionListener((e) -> openFileDialog());
-        mainPanel.add(selectFileBtn, new GridBagConstraints());
-        return mainPanel;
-    }
-
+    /**
+     * Create the panel seen at the top of the result view, containing the cancel button.
+     * @return a reference to the created panel
+     */
     private JPanel createTopPanel() {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
@@ -72,6 +59,31 @@ public class UploadSelectView extends JPanel implements PropertyChangeListener {
         return topPanel;
     }
 
+    /**
+     * Create the main panel for this view. That is, the panel containing all but the top region.
+     * @return a reference to the created panel
+     */
+    private JPanel createMainPanel() {
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setBackground(new Color(UploadSelectViewModel.MAIN_PANEL_COLOR, true));
+        mainPanel.setPreferredSize(new Dimension(
+                UploadSelectViewModel.PANEL_WIDTH,
+                UploadSelectViewModel.MAIN_PANEL_HEIGHT
+        ));
+
+        JButton selectFileBtn = ViewComponentFactory.buildButton(UploadSelectViewModel.UPLOAD_BUTTON_LABEL);
+
+        selectFileBtn.addActionListener((e) -> openFileDialog());
+        mainPanel.add(selectFileBtn, new GridBagConstraints());
+        return mainPanel;
+    }
+
+    /**
+     * Open a file dialog within which the user may select exclusively image files. If an image
+     * is successfully selected, it is then sent to the interactor for processing toward the
+     * confirmation stage of the Upload use case.
+     */
     public void openFileDialog() {
         // make the JFileChooser resemble the system file manager
         // first store the current Look and Feel, and swap to the new system-based Look and Feel
@@ -106,17 +118,21 @@ public class UploadSelectView extends JPanel implements PropertyChangeListener {
         } catch (UnsupportedLookAndFeelException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    /**
+     * A getter for the view name.
+     * @return the view name to be used by view models
+     */
+    public String getViewName() {
+        return "upload select";
     }
 
     public void setController(UploadController controller) {
         this.controller = controller;
     }
 
-    public String getViewName() {
-        return viewName;
-    }
-
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         final UploadSelectState state = (UploadSelectState) evt.getNewValue();
         if (state.getError() != null) {

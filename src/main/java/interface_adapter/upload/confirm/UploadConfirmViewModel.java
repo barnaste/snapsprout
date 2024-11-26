@@ -2,7 +2,12 @@ package interface_adapter.upload.confirm;
 
 import interface_adapter.ViewModel;
 
+/**
+ * The View Model for the confirmation stage of the Upload use case.
+ * Contains style details for the view in this stage.
+ */
 public class UploadConfirmViewModel extends ViewModel<UploadConfirmState> {
+
     public static final int TRANSPARENT = 0x00000000;
     public static final int TOP_PANEL_COLOR = 0xfff8f5e4;
 

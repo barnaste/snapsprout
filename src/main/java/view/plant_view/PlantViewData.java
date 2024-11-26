@@ -1,9 +1,10 @@
 package view.plant_view;
 
-/*
+/**
 ** This class maintains the constants regarding display information for a plant view.
  */
 public class PlantViewData {
+
     public static final int TRANSPARENT = 0x00000000;
     public static final int TOP_PANEL_COLOR = 0xfff8f5e4;
     public static final int CONTENT_PANEL_COLOR = 0xfffffbef;

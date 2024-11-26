@@ -6,6 +6,7 @@ package use_case.delete_user;
 public class DeleteUserInputData {
     private final String username;
     private final String password;
+
     public DeleteUserInputData(String username, String password) {
 
         this.username = username;
@@ -15,6 +16,7 @@ public class DeleteUserInputData {
     public String getUsername() {
         return username;
     }
+
     public String getPassword() {
         return password;
     }

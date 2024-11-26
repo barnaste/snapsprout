@@ -1,5 +1,7 @@
 package app;
 
+import data_access.MongoImageDataAccessObject;
+import data_access.MongoPlantDataAccessObject;
 import data_access.MongoUserDataAccessObject;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.delete_user.DeleteUserController;
@@ -16,7 +18,7 @@ import interface_adapter.mode_switch.ModeSwitchViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
-import use_case.delete_user.DeleteUserInputBoundry;
+import use_case.delete_user.DeleteUserInputBoundary;
 import use_case.delete_user.DeleteUserInteractor;
 import use_case.delete_user.DeleteUserOutputBoundary;
 import use_case.login.LoginInputBoundary;
@@ -51,15 +53,17 @@ public class AppBuilder {
     // Data access object for user data (MongoDB)
     private final MongoUserDataAccessObject userDataAccessObject = MongoUserDataAccessObject.getInstance();
 
+    private final MongoImageDataAccessObject imageDataAccessObject = MongoImageDataAccessObject.getInstance();
+    private final MongoPlantDataAccessObject plantDataAccessObject = MongoPlantDataAccessObject.getInstance();
+
     // ViewModels for different views
     private final SignupViewModel signupViewModel = new SignupViewModel();
     private final LoginViewModel loginViewModel = new LoginViewModel();
     private final MainViewModel mainViewModel = new MainViewModel();
-    private final ModeSwitchViewModel modeSwitchViewModel = new ModeSwitchViewModel();
 
     // Views for different app states
     private final SignupView signupView = new SignupView(signupViewModel);
-    private final MainView mainView = new MainView(mainViewModel, modeSwitchViewModel);
+    private final MainView mainView = new MainView(mainViewModel, viewManagerModel, loginViewModel);
     private final LoginView loginView = new LoginView(loginViewModel);
     private final StartView startView = new StartView(signupViewModel, loginViewModel, viewManagerModel);
 
@@ -84,19 +88,6 @@ public class AppBuilder {
      */
     public AppBuilder addSignupView() {
         cardPanel.add(signupView, signupView.getViewName());
-        return this;
-    }
-
-    public AppBuilder addSwitchModeUserCase() {
-        // Set up the output boundary (presenter)
-        final ModeSwitchPresenter modeSwitchPresenter = new ModeSwitchPresenter(modeSwitchViewModel);
-
-        // Set up the use case interactor
-        final ModeSwitchInteractor modeSwitchInteractor = new ModeSwitchInteractor(modeSwitchPresenter);
-
-        // Now wire it with the view
-        mainView.setModeSwitchController(new ModeSwitchController(modeSwitchInteractor));
-
         return this;
     }
 
@@ -145,35 +136,6 @@ public class AppBuilder {
 
         final LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
-        return this;
-    }
-
-    /**
-     * Adds the Logout Use Case to the application.
-     * @return this builder
-     */
-    public AppBuilder addLogoutUseCase() {
-        final LogoutOutputBoundary logoutOutputBoundary = new LogoutPresenter(viewManagerModel, mainViewModel,
-                                                                              loginViewModel);
-
-        final LogoutInputBoundary logoutInteractor = new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
-
-        final LogoutController logoutController = new LogoutController(logoutInteractor);
-        mainView.setLogoutController(logoutController);
-        return this;
-    }
-
-    /**
-     * Adds the Delete User Use Case to the application.
-     * @return this builder
-     */
-    public AppBuilder addDeleteUserUseCase() {
-        final DeleteUserOutputBoundary deleteUserOutputBoundary = new DeleteUserPresenter(viewManagerModel,
-                mainViewModel, loginViewModel);
-        final DeleteUserInputBoundry deleteUserInteractor = new DeleteUserInteractor(deleteUserOutputBoundary);
-
-        final DeleteUserController deleteUserController = new DeleteUserController(deleteUserInteractor);
-        mainView.setDeleteUserController(deleteUserController);
         return this;
     }
 

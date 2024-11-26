@@ -16,11 +16,8 @@ public class Main {
                 .addSignupView()
                 .addLoggedInView()
                 .addStartView()
-                .addSwitchModeUserCase()
                 .addSignupUseCase()
                 .addLoginUseCase()
-                .addLogoutUseCase()
-                .addDeleteUserUseCase()
                 .build();
 
         application.pack();

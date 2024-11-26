@@ -19,6 +19,10 @@ public class InMemoryUserDataAccessObject implements use_case.UserDataAccessInte
 
     private static InMemoryUserDataAccessObject instance;
 
+    /**
+     * The private constructor -- if a new instance of this class is to be requested, it should be done
+     * by calling the getInstance() public method.
+     */
     public InMemoryUserDataAccessObject() {}
 
     /**
@@ -52,4 +56,6 @@ public class InMemoryUserDataAccessObject implements use_case.UserDataAccessInte
 
     @Override
     public boolean deleteUser(String username) {return users.remove(username) != null;}
+
+    public void deleteAll() {users.clear();}
 }

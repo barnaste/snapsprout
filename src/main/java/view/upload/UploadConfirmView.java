@@ -5,17 +5,16 @@ import interface_adapter.upload.confirm.UploadConfirmState;
 import interface_adapter.upload.confirm.UploadConfirmViewModel;
 import view.ViewComponentFactory;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
 
+/**
+ * The View for the confirmation stage of the Upload use case.
+ */
 public class UploadConfirmView extends JPanel implements PropertyChangeListener {
-    private final String viewName = "upload confirm";
 
     private UploadController controller;
 
@@ -41,6 +40,10 @@ public class UploadConfirmView extends JPanel implements PropertyChangeListener 
         this.add(createImagePanel(), constraints);
     }
 
+    /**
+     * Create the panel seen at the top of the result view, containing the return and confirm buttons.
+     * @return a reference to the created panel
+     */
     private JPanel createTopPanel() {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
@@ -64,6 +67,11 @@ public class UploadConfirmView extends JPanel implements PropertyChangeListener 
         return topPanel;
     }
 
+    /**
+     * Create the image panel for this view. This is the panel encompassing all but the top region,
+     * displaying the image stored within this class.
+     * @return a reference to the created panel
+     */
     private JPanel createImagePanel() {
         JPanel imagePanel = new JPanel() {
             @Override
@@ -85,20 +93,28 @@ public class UploadConfirmView extends JPanel implements PropertyChangeListener 
         return imagePanel;
     }
 
-    public void setController(UploadController controller) {
-        this.controller = controller;
-    }
-
-    public String getViewName() {
-        return viewName;
-    }
-
+    /**
+     * Set variable fields within this view, based on the state information given as parameter.
+     * @param state the state the view should represent
+     */
     private void setFields(UploadConfirmState state) {
         this.imagePath = state.getImagePath();
         this.image = ViewComponentFactory.buildCroppedImage(this.imagePath);
 
         this.revalidate();
         this.repaint();
+    }
+
+    /**
+     * A getter for the view name.
+     * @return the view name to be used by view models
+     */
+    public String getViewName() {
+        return "upload confirm";
+    }
+
+    public void setController(UploadController controller) {
+        this.controller = controller;
     }
 
     @Override

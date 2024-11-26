@@ -11,7 +11,11 @@ import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class PlantInfoEditView extends PlantView implements PropertyChangeListener {
+/**
+ * The View for the editable plant view use case.
+ */
+public class PlantInfoEditView extends PlantView {
+
     private UserPlantInfoEditController controller;
 
     public PlantInfoEditView(Plant plant, BufferedImage image) {
@@ -25,6 +29,7 @@ public class PlantInfoEditView extends PlantView implements PropertyChangeListen
         this.getLikesLabel().setText("\uD83D\uDC4D " + plant.getNumOfLikes());
     }
 
+    @Override
     protected JPanel createTopPanel() {
         JPanel topPanel = super.createTopPanel();
         JButton returnBtn = ViewComponentFactory.buildButton(UserPlantInfoEditViewModel.RETURN_BUTTON_LABEL);
@@ -35,6 +40,11 @@ public class PlantInfoEditView extends PlantView implements PropertyChangeListen
         return topPanel;
     }
 
+    /**
+     * Create the panel within which user action buttons save and delete are displayed.
+     * @return a reference to the created panel
+     */
+    @Override
     protected JPanel createActionPanel() {
         JPanel actionPanel = super.createActionPanel();
 
@@ -66,10 +76,5 @@ public class PlantInfoEditView extends PlantView implements PropertyChangeListen
 
     public void setController(UserPlantInfoEditController controller) {
         this.controller = controller;
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-
     }
 }
